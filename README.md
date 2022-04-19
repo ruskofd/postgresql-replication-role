@@ -26,7 +26,7 @@ This Ansible role is designed to configure PostgreSQL "streaming" replication on
 
 ### Role variables
 
-The role variable documentation is located [HERE](docs/variables.md)
+The role variables are documentated [HERE](docs/variables.md)
 
 ### Install and use this role
 

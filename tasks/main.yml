@@ -1,0 +1,20 @@
+---
+- name: Define PostgreSQL release version
+  ansible.builtin.set_fact:
+    postgresql_release: "{{ postgresql_version.split('.')[0] }}"
+
+- name: Include OS-specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+    - "{{ ansible_distribution }}.yml"
+    - "{{ ansible_os_family }}-{{ ansible_distribution_major_version }}.yml"
+    - "{{ ansible_os_family }}.yml"
+
+- name: Create replication user on primary node
+  include_tasks: primary.yml
+  when: postgresql_role == "primary"
+
+- name: Enable replication on standby node(s)
+  include_tasks: standby.yml
+  when: postgresql_role == "standby"

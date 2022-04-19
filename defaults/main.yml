@@ -1,0 +1,18 @@
+---
+#------------------------------------------------------------------------------
+# GENERAL
+#------------------------------------------------------------------------------
+postgresql_version: "14.2"
+postgresql_root_dir: "/var/lib/postgresql"
+postgresql_data_dir: "{{ postgresql_root_dir }}/{{ postgresql_release }}/data"
+postgresql_home_dir: "{{ postgresql_root_dir }}"
+
+#------------------------------------------------------------------------------
+# STREAMING REPLICATION
+#------------------------------------------------------------------------------
+postgresql_replication_user: "replication"
+postgresql_replication_password: null
+postgresql_replication_primary_host: ""
+postgresql_replication_primary_port: 5432
+postgresql_replication_slot_name: "standby_{{ inventory_hostname }}"
+postgresql_replication_init_extra_opts: ""

@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  author: "Florian Bobin <fbobin@tuta.io>"
+  description: Ansible role to manage PostgreSQL streaming replication
+  license: BSD
+  min_ansible_version: 5.0.0
+  platforms:
+    - name: Fedora
+      versions:
+        - 35
+    - name: EL
+      versions:
+        - 8
+dependencies: []

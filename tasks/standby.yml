@@ -1,0 +1,92 @@
+---
+- name: Check if replication has already been configured
+  ansible.builtin.stat:
+    path: "{{ postgresql_data_dir }}/standby.signal"
+  register: pg_standby_signal
+
+- name: Configure replication
+  block:
+    - name: Stop PostgreSQL instance
+      ansible.builtin.systemd:
+        name: postgresql.service
+        state: stopped
+
+    - name: Create temporary directory to save configurations
+      ansible.builtin.file:
+        path: /tmp/ansible-pg-tmp
+        state: directory
+
+    - name: Backup configurations before standby init
+      ansible.builtin.copy:
+        src: "{{ postgresql_data_dir }}/{{ item }}"
+        dest: "/tmp/ansible-pg-tmp/{{ item }}"
+        remote_src: yes
+        force: yes
+      loop:
+        - "postgresql.conf"
+        - "pg_hba.conf"
+
+    - name: Purge PostgreSQL data directory
+      ansible.builtin.file:
+        path: "{{ postgresql_data_dir }}"
+        state: absent
+
+    - name: Add replication connection details in pgpass
+      ansible.builtin.lineinfile:
+        line: "{{ postgresql_replication_primary_host }}:{{ postgresql_replication_primary_port }}:replication:{{ postgresql_replication_user }}:{{ postgresql_replication_password }}"
+        path: "{{ postgresql_home_dir }}/.pgpass"
+        create: yes
+        owner: postgres
+        group: postgres
+        mode: '600'
+      become: yes
+      become_user: postgres
+      no_log: true
+
+    - name: Initiate first data replication using pg_basebackup
+      ansible.builtin.shell: >
+        {{ postgresql_bin_dir }}/pg_basebackup
+        -h {{ postgresql_replication_primary_host }}
+        -p {{ postgresql_replication_primary_port }}
+        -U {{ postgresql_replication_user }}
+        --no-password
+        --create-slot
+        --slot={{ postgresql_replication_slot_name }}
+        --pgdata={{ postgresql_data_dir }}
+        --wal-method=stream
+        --checkpoint=fast
+        --write-recovery-conf
+        --format=plain
+        {{ postgresql_replication_init_extra_opts }}
+      become: yes
+      become_user: postgres
+      register: pg_basebackup
+
+    - name: Restore configurations after pg_basebackup
+      ansible.builtin.copy:
+        src: "/tmp/ansible-pg-tmp/{{ item }}"
+        dest: "{{ postgresql_data_dir }}/{{ item }}"
+        remote_src: yes
+        force: yes
+        owner: postgres
+        group: postgres
+        mode: '600'
+      loop:
+        - "postgresql.conf"
+        - "pg_hba.conf"
+      register: pg_restore_config
+
+    - name: Cleanup temporary tmp directory for configuration backup
+      ansible.builtin.file:
+        path: /tmp/ansible-pg-tmp
+        state: absent
+      when: pg_restore_config is succeeded
+
+    - name: Restart PostgreSQL instance
+      ansible.builtin.systemd:
+        name: postgresql.service
+        state: restarted
+      when:
+        - pg_basebackup.rc == 0
+        - pg_restore_config is succeeded
+  when: not pg_standby_signal.stat.exists

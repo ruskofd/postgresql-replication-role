@@ -1,0 +1,3 @@
+---
+postgresql_install_dir: "/usr/pgsql-{{ postgresql_release }}"
+postgresql_bin_dir: "{{ postgresql_install_dir }}/bin"

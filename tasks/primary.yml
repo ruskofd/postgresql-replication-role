@@ -1,0 +1,13 @@
+---
+- name: Ensure 'psycopg2' package is installed (role dependency)
+  ansible.builtin.package:
+    name: python3-psycopg2
+    state: present
+
+- name: Create replication user
+  community.postgresql.postgresql_user:
+    name: "{{ postgresql_replication_user }}"
+    password: "{{ postgresql_replication_password }}"
+    role_attr_flags: "REPLICATION"
+    state: present
+  no_log: true

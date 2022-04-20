@@ -42,8 +42,9 @@ The role variables are documentated [HERE](docs/variables.md)
   $ cat requirements.yml
   ---
   roles:
-    - name: https://github.com/ruskofd/postgresql-replication-role.git
-      type: git
+    - name: postgresql-replication
+      src: https://github.com/ruskofd/postgresql-replication-role.git
+      scm: git
       version: '1.0.0'
 
   $ ansible-galaxy install-f -r requirements.yml
@@ -55,6 +56,6 @@ The role variables are documentated [HERE](docs/variables.md)
   - name: Configure PostgreSQL streaming replication
     hosts: postgresql
     roles:
-      - role: postgresql-replication-role
+      - role: postgresql-replication
   ```
 

@@ -12,9 +12,8 @@ This Ansible role is designed to configure PostgreSQL "streaming" replication on
 
 **Supported Platforms**
 
-  - RHEL/CentOS Stream 8
-  - RHEL/CentOS Stream 9
-  - Fedora 35
+  - RHEL/CentOS Stream 8/9
+  - Fedora 35/36
 
 **Supported PostgreSQL releases**
 

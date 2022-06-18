@@ -2,7 +2,7 @@
 #------------------------------------------------------------------------------
 # GENERAL
 #------------------------------------------------------------------------------
-postgresql_version: "14.2"
+postgresql_version: "14.4"
 postgresql_root_dir: "/var/lib/postgresql"
 postgresql_data_dir: "{{ postgresql_root_dir }}/{{ postgresql_release }}/data"
 postgresql_home_dir: "{{ postgresql_root_dir }}"

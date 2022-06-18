@@ -5,7 +5,7 @@ Role Variables
 
 | Name                              | Default                      | Description                                                      |
 | :-------------------------------- | :--------------------------- | :--------------------------------------------------------------- |
-| `postgresql_version`              | `14.2`                       | Define the release version of PostgreSQL to use (binaries, configurations) |
+| `postgresql_version`              | `14.4`                       | Define the release version of PostgreSQL to use (binaries, configurations) |
 | `postgresql_root_dir`             | `/var/lib/postgresql/{{ postgresql_release }}/data`| Directory where everything related to the PostgreSQL instance will be stored |
 | `postgresql_data_dir`             | `{{ postgresql_root_dir }}/data`   | Directory where PostgreSQL will store datas                |
 | `postgresql_home_dir`             | `{{ postgresql_root_dir }}`  | Home directory for the `postgres` user                           |

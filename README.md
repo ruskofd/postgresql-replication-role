@@ -2,18 +2,17 @@
 
 ### General informations
 
-This Ansible role is designed to configure PostgreSQL "streaming" replication on target servers.
+This Ansible role is designed to configure PostgreSQL **streaming replication** on target servers. 
 
 **Table of Contents**
 
   - [Roles variables](#role-variables)
-  - [Roles tags](#role-variables)
   - [Install and use this role](#install-and-use-this-role)
 
 **Supported Platforms**
 
-  - RHEL/CentOS Stream 8/9
-  - Fedora 35/36
+  - Red Hat Enterprise Linux 8.x/9.x
+  - Fedora 36
 
 **Supported PostgreSQL releases**
 
@@ -22,6 +21,11 @@ This Ansible role is designed to configure PostgreSQL "streaming" replication on
 **References**
 
   - PostgreSQL : https://www.postgresql.org/
+
+**Implementation notes**
+
+  - ***Role usage*** : this role is designed to be used in tandem with my PostgreSQL server [role](https://github.com/fbd581/postgresql-server-role), the replication setup is based on default variables of this latter (i.e server configurations are now located in `/etc/postgresql` by default and will not be saved anymore).
+  - ***Replication slots*** : this role will setup streaming replication with [replication slots](https://hevodata.com/learn/postgresql-replication-slots/) enabled.
 
 ### Role variables
 
@@ -32,7 +36,7 @@ The role variables are documentated [HERE](docs/variables.md)
 * Install the role using the command-line :
 
   ```shell
-  $ ansible-galaxy collection install git+https://github.com/ruskofd/postgresql-replication-role.git
+  $ ansible-galaxy role install git+https://github.com/ruskofd/postgresql-replication-role.git
   ```
 
 * Install the collection in your projects using a `requirements.yml` file and `ansible-galaxy` command-line :
@@ -44,7 +48,7 @@ The role variables are documentated [HERE](docs/variables.md)
     - name: postgresql-replication
       src: https://github.com/ruskofd/postgresql-replication-role.git
       scm: git
-      version: '1.0.0'
+      version: '2.0.0'
 
   $ ansible-galaxy install-f -r requirements.yml
   ```

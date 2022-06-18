@@ -8,6 +8,6 @@
   community.postgresql.postgresql_user:
     name: "{{ postgresql_replication_user }}"
     password: "{{ postgresql_replication_password }}"
-    role_attr_flags: "REPLICATION"
+    role_attr_flags: "REPLICATION,LOGIN"
     state: present
   no_log: true

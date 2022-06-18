@@ -11,21 +11,6 @@
         name: postgresql.service
         state: stopped
 
-    - name: Create temporary directory to save configurations
-      ansible.builtin.file:
-        path: /tmp/ansible-pg-tmp
-        state: directory
-
-    - name: Backup configurations before standby init
-      ansible.builtin.copy:
-        src: "{{ postgresql_data_dir }}/{{ item }}"
-        dest: "/tmp/ansible-pg-tmp/{{ item }}"
-        remote_src: yes
-        force: yes
-      loop:
-        - "postgresql.conf"
-        - "pg_hba.conf"
-
     - name: Purge PostgreSQL data directory
       ansible.builtin.file:
         path: "{{ postgresql_data_dir }}"
@@ -62,31 +47,9 @@
       become_user: postgres
       register: pg_basebackup
 
-    - name: Restore configurations after pg_basebackup
-      ansible.builtin.copy:
-        src: "/tmp/ansible-pg-tmp/{{ item }}"
-        dest: "{{ postgresql_data_dir }}/{{ item }}"
-        remote_src: yes
-        force: yes
-        owner: postgres
-        group: postgres
-        mode: '600'
-      loop:
-        - "postgresql.conf"
-        - "pg_hba.conf"
-      register: pg_restore_config
-
-    - name: Cleanup temporary tmp directory for configuration backup
-      ansible.builtin.file:
-        path: /tmp/ansible-pg-tmp
-        state: absent
-      when: pg_restore_config is succeeded
-
     - name: Restart PostgreSQL instance
       ansible.builtin.systemd:
         name: postgresql.service
         state: restarted
-      when:
-        - pg_basebackup.rc == 0
-        - pg_restore_config is succeeded
+      when: pg_basebackup.rc == 0
   when: not pg_standby_signal.stat.exists
